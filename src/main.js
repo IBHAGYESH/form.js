@@ -5,17 +5,24 @@ import Storage from './lib/storage.js';
 import Table from './lib/table.js';
 
 class Main {
-  constructor(formContainerId, storageId, tableContainerId) {
+  constructor(formContainerId, tableContainerId, storageId) {
+
     // formContainerId, storageId, tableContainerId will be in argument of constructor
     // start code to init and link form.js, storage.js, table.js
-    const frm = new Form(formContainerId, formData); // form js class to create form and access its methods
-    const storage = new Storage(storageId); // storage class to access storage methods
-    const tbl = new Table(tableContainerId); // table js class to create table and access its methods
-    console.log(formData, frm, storage, tbl, 'Printed all instance of the class to remove eslint error');
+    console.log(this, "&&");
 
-    this.formContainer = document.getElementById(formContainerId)
-    this.storageContainer = JSON.parse(localStorage.getItem(storageId))
-    this.tableContainer = document.getElementById(tableContainerId)
+    const frm = new Form(formContainerId, formData, this); // form js class to create form and access its methods
+    const tbl = new Table(tableContainerId, this); // table js class to create table and access its methods
+    const storage = new Storage(storageId, this); // storage class to access storage methods
+    // console.log(formData, frm, tbl, storage, 'Printed all instance of the class to remove eslint error');
+
+    // this.formContainer = document.getElementById(formContainerId)
+    // this.tableContainer = document.getElementById(tableContainerId)
+    // this.storageContainer = JSON.parse(localStorage.getItem(storageId))
+
+  }
+  passFormDataToStorage(formData) {
+    console.log(formData, "{{{{{FROM MAIN");
   }
 }
 //formContainerId: HTML Div element id inside of which you want to create form4
@@ -28,5 +35,5 @@ class Main {
 // tableContainerId -> #tableDiv of current index.html
 
 //pass formContainerId, storageId, tableContainerId to Main(formContainerId, storageId, tableContainerId)
-const main = new Main('root', 'form', 'root-table');
-console.log(main);
+const main = new Main('root', 'root-table', 'form');
+// console.log(main);

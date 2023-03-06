@@ -25,7 +25,7 @@ const formData = [
         type: 'text',
         label: 'Name',
         key: 'name',
-        value: '',
+        value: 'aa',
         // attr is option, User can add new html element properties to it or user can remove all properties like empty object  attr: {}
         attr: {
             id: 'txtName1',
@@ -40,7 +40,7 @@ const formData = [
         type: 'email',
         label: 'Email',
         key: 'email',
-        value: '',
+        value: 'a@b.c',
         attr: {
             id: 'txtEmail',
             className: 'form-control textInput',
@@ -54,14 +54,14 @@ const formData = [
         type: 'tel',
         label: 'Phone',
         key: 'phone',
-        value: '',
+        value: '787',
         attr: {},
     },
     {
         type: 'textarea',
         label: 'Address',
         key: 'address',
-        value: '',
+        value: 'asd',
         attr: {
             id: 'txtAddress',
             className: 'form-control textInput',
@@ -76,7 +76,7 @@ const formData = [
         type: 'text',
         label: 'Street Address',
         key: 'street_address',
-        value: '',
+        value: 'asd',
         attr: {
             id: 'txtStreet',
             className: 'form-control textInput',
@@ -90,7 +90,7 @@ const formData = [
         type: 'text',
         label: 'City',
         key: 'city',
-        value: '',
+        value: 'asd',
         attr: {
             id: 'txtCity',
             className: 'form-control textInput',
@@ -104,7 +104,7 @@ const formData = [
         type: 'text',
         label: 'State',
         key: 'state',
-        value: '',
+        value: 'sdf',
         attr: {
             id: 'txtState',
             className: 'form-control textInput',
@@ -118,7 +118,7 @@ const formData = [
         type: 'number',
         label: 'Pin Code',
         key: 'pin_code',
-        value: '',
+        value: '787',
         attr: {
             id: 'txtPincode',
             className: 'form-control textInput',
