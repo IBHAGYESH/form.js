@@ -10,10 +10,12 @@ class Main {
     // formContainerId, storageId, tableContainerId will be in argument of constructor
     // start code to init and link form.js, storage.js, table.js
 
-    const frm = new Form(formContainerId, formData, this); // form js class to create form and access its methods
-    const tbl = new Table(tableContainerId, this); // table js class to create table and access its methods
-    const storage = new Storage(storageId, this); // storage class to access storage methods
+    const frm = new Form(formContainerId, formData); // form js class to create form and access its methods
+    const tbl = new Table(tableContainerId); // table js class to create table and access its methods
+    const storage = new Storage(storageId); // storage class to access storage methods
     // console.log(formData, frm, tbl, storage, 'Printed all instance of the class to remove eslint error');
+
+
 
 
     this.renderApp = () => {
@@ -22,12 +24,39 @@ class Main {
     }
     this.renderApp()
 
-    this.formSubmit = (formData) => {
-      storage.storeData(formData)
-      tbl.renderTable(formData)
+    frm.container.onsubmit = () => {
+      event.preventDefault()
+      const formValues = {}
+
+      const notAllowed = ["select", "radio", "checkbox"]
+      formData.forEach(({ type, key }) => {
+        if (!notAllowed.includes(type)) {
+          if (key) {
+            formValues[key] = frm[key].value
+          }
+        }
+      })
+      const storedData = storage.storeData(formValues)
+      tbl.renderTable(storedData)
     }
 
-    this.editForm
+    function loadData() {
+      const storedData = storage.readData()
+      frm.loadDataIntoForm(storedData[0])
+    }
+
+    tbl.on("edit", () => {
+
+    })
+
+    // temp
+    this.loadBtn = document.getElementById("load")
+    this.loadBtn.onclick = loadData
+
+    // tbl.container.onsubmit = () => {
+    //   // event.preventDefault()
+    //   console.log("__________TABLE", event.target[0].getAttribute("userId"), event.target[0].getAttribute("key"), { ...event.target });
+    // }
   }
 }
 //formContainerId: HTML Div element id inside of which you want to create form4
