@@ -7,6 +7,7 @@ export default class Form {
     this.formValues = {}
 
     this.renderFormUI = () => {
+      this.container.innerHTML = ""
       const notAllowed = ["select", "radio", "checkbox"]
       const form = document.createElement("form")
       formData.forEach(({ type, key, label, value, unique }) => {

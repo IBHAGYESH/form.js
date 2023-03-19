@@ -16,7 +16,16 @@ class Main {
     // console.log(formData, frm, tbl, storage, 'Printed all instance of the class to remove eslint error');
 
 
-
+    tbl.on("click", () => {
+      event.preventDefault()
+      const action = event.target.getAttribute("key")
+      const userId = event.target.getAttribute("userId")
+      if (action === "edit") {
+        this.loadData(userId)
+      } else {
+        this.deleteData(userId)
+      }
+    })
 
     this.renderApp = () => {
       frm.renderFormUI()
@@ -28,35 +37,31 @@ class Main {
       event.preventDefault()
       const formValues = {}
 
-      const notAllowed = ["select", "radio", "checkbox"]
+      // getting values from the form refs 
+      const notAllowed = ["select", "radio", "checkbox", "submit", "reset"]
       formData.forEach(({ type, key }) => {
         if (!notAllowed.includes(type)) {
-          if (key) {
-            formValues[key] = frm[key].value
-          }
+          formValues[key] = frm[key].value
         }
       })
       const storedData = storage.storeData(formValues)
       tbl.renderTable(storedData)
+      event.target.reset()
     }
 
-    function loadData() {
+    this.loadData = (userId) => {
       const storedData = storage.readData()
-      frm.loadDataIntoForm(storedData[0])
+      const dataExists = storedData.find((data) => data.userId === userId)
+      if (dataExists) {
+        frm.loadDataIntoForm(dataExists)
+      }
     }
 
-    tbl.on("edit", () => {
+    this.deleteData = (userId) => {
+      storage.deleteDataFromStore(userId)
+      this.renderApp()
+    }
 
-    })
-
-    // temp
-    this.loadBtn = document.getElementById("load")
-    this.loadBtn.onclick = loadData
-
-    // tbl.container.onsubmit = () => {
-    //   // event.preventDefault()
-    //   console.log("__________TABLE", event.target[0].getAttribute("userId"), event.target[0].getAttribute("key"), { ...event.target });
-    // }
   }
 }
 //formContainerId: HTML Div element id inside of which you want to create form4

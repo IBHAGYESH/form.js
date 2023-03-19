@@ -21,18 +21,35 @@ export default class Storage {
 
     this.storeData = (formData) => {
       const store = this.readData()
-      const index = store.indexOf(formData);
+      const dataExists = store.find((data) => data.userId === formData.userId);
 
-      if (index !== -1) {
-        console.log("old entry");
-        store[index] = formData;
-      } else {
-        console.log("new entry");
-        store.push(formData)
+      if (dataExists) {
+        const newStore = store.map((data) => {
+          if (data.userId === formData.userId) {
+            data = formData
+          }
+          return data
+        })
+        localStorage.setItem("form", JSON.stringify(newStore))
+        return newStore
       }
 
+      store.push(formData)
       localStorage.setItem("form", JSON.stringify(store))
       return store
+    }
+
+    this.deleteDataFromStore = (id) => {
+      const store = this.readData()
+      const dataExists = store.find((data) => data.userId === id);
+      let newStore
+
+      if (dataExists) {
+        newStore = store.filter((data) => data.userId !== id)
+        localStorage.setItem("form", JSON.stringify(newStore))
+      }
+
+      return newStore
     }
 
   }
