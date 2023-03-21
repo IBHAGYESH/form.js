@@ -1,5 +1,5 @@
 // formData is accessible here as we have global variable in formData.js
-import formData from './data/formData.js';
+import formData, { multipleData } from './data/formData.js';
 import Form from './lib/form.js';
 import Storage from './lib/storage.js';
 import Table from './lib/table.js';
@@ -7,14 +7,9 @@ import Table from './lib/table.js';
 class Main {
   constructor(formContainerId, tableContainerId, storageId) {
 
-    // formContainerId, storageId, tableContainerId will be in argument of constructor
-    // start code to init and link form.js, storage.js, table.js
-
     const frm = new Form(formContainerId, formData); // form js class to create form and access its methods
     const tbl = new Table(tableContainerId); // table js class to create table and access its methods
     const storage = new Storage(storageId); // storage class to access storage methods
-    // console.log(formData, frm, tbl, storage, 'Printed all instance of the class to remove eslint error');
-
 
     tbl.on("click", () => {
       event.preventDefault()
@@ -38,7 +33,7 @@ class Main {
       const formValues = {}
 
       // getting values from the form refs 
-      const notAllowed = ["select", "radio", "checkbox", "submit", "reset"]
+      const notAllowed = ["radio", "checkbox", "submit", "reset"]
       formData.forEach(({ type, key }) => {
         if (!notAllowed.includes(type)) {
           formValues[key] = frm[key].value
@@ -47,6 +42,12 @@ class Main {
       const storedData = storage.storeData(formValues)
       tbl.renderTable(storedData)
       event.target.reset()
+      frm.resetForm()
+    }
+
+    frm.container.onreset = () => {
+      event.target.reset()
+      frm.resetForm()
     }
 
     this.loadData = (userId) => {
@@ -64,15 +65,52 @@ class Main {
 
   }
 }
-//formContainerId: HTML Div element id inside of which you want to create form4
-// formContainerId -> #employeeForm of current index.html
 
-// storageId: localStorage key for saving json  string data init
-// storageId -> 'employeeData' simple string to selected as key of localStorage
 
-//tableContainerId: HTML Div element id inside of which you want to create table
-// tableContainerId -> #tableDiv of current index.html
 
-//pass formContainerId, storageId, tableContainerId to Main(formContainerId, storageId, tableContainerId)
-const main = new Main('root', 'root-table', 'form');
-// console.log(main);
+export default function formJs(divId, data) {
+  const mainDiv = document.getElementById(divId)
+  if (data.length && Array.isArray(data) && Array.isArray(data[0])) {
+    // load multiple forms if data is passed as array
+
+    data.forEach((_, index) => {
+      const formDiv = document.createElement("div")
+      formDiv.setAttribute("id", `root-form-${index}}`)
+
+      const tableDiv = document.createElement("div")
+      const table = document.createElement("table")
+      table.setAttribute("id", `root-table-${index}}`)
+      tableDiv.appendChild(table)
+
+      mainDiv.appendChild(formDiv)
+      mainDiv.appendChild(tableDiv)
+
+      new Main(`root-form-${index}}`, `root-table-${index}}`, `form-${index}`);
+    })
+
+
+  } else if (data.length &&
+    Array.isArray(data)) {
+    // load single form if data is single object
+
+    const formDiv = document.createElement("div")
+    formDiv.setAttribute("id", "root-form")
+
+    const tableDiv = document.createElement("div")
+    const table = document.createElement("table")
+    table.setAttribute("id", "root-table")
+    tableDiv.appendChild(table)
+
+    mainDiv.appendChild(formDiv)
+    mainDiv.appendChild(tableDiv)
+
+    new Main('root-form', 'root-table', 'form');
+
+  } else {
+    const msg = document.createElement("h1")
+    msg.innerText = "Data is incorrect"
+    mainDiv.appendChild(msg)
+  }
+}
+
+formJs("root", multipleData)

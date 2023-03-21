@@ -1,9 +1,7 @@
 export default class Table {
   constructor(tableContainerId) {
-    this.container = document.getElementById(tableContainerId); // Use this container to create table inside of it
+    this.container = document.getElementById(tableContainerId);
     this.container.border = "1px"
-    // Pass tableContainerId to append table inside of HTML DIV element
-    // console.log('Table');
     const events = {}
     this.on = (event, cb) => {
       if (!Object.keys(events).includes(event)) {
@@ -11,7 +9,6 @@ export default class Table {
       } else {
         events[event].push(cb)
       }
-      // console.log(events, "+++++");
     }
 
     this.initTable = () => {
@@ -70,20 +67,12 @@ export default class Table {
       }
     }
 
-
-    this.editRecord = () => {
-
-    }
-
     this.appendEvents = (element) => {
       for (const [event, values] of Object.entries(events)) {
-        // console.log(event, "<<event", values, "<<values");
-
         values.forEach((value) => {
           element.addEventListener(event, value)
         })
       }
     }
   }
-  // create methods/event to refresh table data, add data row, update data row, delete data row, etc
 }

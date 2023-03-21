@@ -1,22 +1,19 @@
 export default class Form {
   constructor(formContainerId, formData) {
-    this.container = document.getElementById(formContainerId); //Container element from HTML in which you have to add form
-    // Pass formContainerId to append form element inside of HTML DIV element
-    // use formData to create form
-    // console.log('Form', this.container);
+    this.container = document.getElementById(formContainerId);
     this.formValues = {}
 
     this.renderFormUI = () => {
       this.container.innerHTML = ""
-      const notAllowed = ["select", "radio", "checkbox"]
+      const notAllowed = ["radio", "checkbox"]
+      const oddInputs = ["select", "radio", "checkbox"]
       const form = document.createElement("form")
-      formData.forEach(({ type, key, label, value, unique }) => {
+      formData.forEach(({ type, key, label, value, unique, options }) => {
         if (!notAllowed.includes(type)) {
-          this[key] = document.createElement("input")
-          this[key].setAttribute("type", type)
-          if (key) {
-            this[key].setAttribute("key", key)
+          if (!oddInputs.includes(type)) {
+            this[key] = document.createElement("input")
           }
+
           switch (type) {
             case "hidden":
               if (unique) {
@@ -26,17 +23,32 @@ export default class Form {
               }
               break;
 
+            case "select":
+              this[key] = document.createElement("select")
+              options.forEach((option, index) => {
+                this[`${key}-${index}`] = document.createElement("option")
+                this[`${key}-${index}`].innerText = option.innerText
+                this[`${key}-${index}`].setAttribute("value", option.value)
+                this[key].appendChild(this[`${key}-${index}`])
+              })
+              break
+
             default:
-              if (label) {
-                const lbl = document.createElement("LABEL");
-                lbl.innerHTML = label;
-                lbl.setAttribute("for", key)
-                form.appendChild(lbl)
-              }
+
               if (value) {
                 this[key].setAttribute("value", value)
               }
               break;
+          }
+          this[key].setAttribute("type", type)
+          if (key) {
+            this[key].setAttribute("key", key)
+          }
+          if (label && type !== "hidden") {
+            const lbl = document.createElement("LABEL");
+            lbl.innerHTML = label;
+            lbl.setAttribute("for", key)
+            form.appendChild(lbl)
           }
           form.appendChild(this[key])
         }
@@ -44,13 +56,15 @@ export default class Form {
       this.container.appendChild(form)
     }
 
-    this.loadDataIntoForm = (formFieldValues)=>{
+    this.resetForm = () => {
+      this["userId"].setAttribute("value", Math.floor(100000 + Math.random() * 900000))
+      this["createdAt"].setAttribute("value", new Date().getTime())
+    }
+
+    this.loadDataIntoForm = (formFieldValues) => {
       for (const [key, value] of Object.entries(formFieldValues)) {
         this[key].value = value
       }
     }
   }
-
-
-  // create methods/event to create form/ reset form/ submit form, etc
 }
