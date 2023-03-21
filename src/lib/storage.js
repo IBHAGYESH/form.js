@@ -2,18 +2,18 @@ export default class Storage {
   constructor(storageId) {
     this.storageId = storageId;
     this.initStore = () => {
-      if (!localStorage.getItem("form")) {
-        localStorage.setItem("form", JSON.stringify([]))
+      if (!localStorage.getItem(this.storageId)) {
+        localStorage.setItem(this.storageId, JSON.stringify([]))
       }
     }
     this.initStore()
 
     this.readData = (id) => {
       if (id) {
-        const store = JSON.parse(localStorage.getItem("form"))
+        const store = JSON.parse(localStorage.getItem(this.storageId))
         return store.find((data) => data.userId === id)
       }
-      return JSON.parse(localStorage.getItem("form"))
+      return JSON.parse(localStorage.getItem(this.storageId))
     }
 
     this.storeData = (formData) => {
@@ -27,12 +27,12 @@ export default class Storage {
           }
           return data
         })
-        localStorage.setItem("form", JSON.stringify(newStore))
+        localStorage.setItem(this.storageId, JSON.stringify(newStore))
         return newStore
       }
 
       store.push(formData)
-      localStorage.setItem("form", JSON.stringify(store))
+      localStorage.setItem(this.storageId, JSON.stringify(store))
       return store
     }
 
@@ -43,7 +43,7 @@ export default class Storage {
 
       if (dataExists) {
         newStore = store.filter((data) => data.userId !== id)
-        localStorage.setItem("form", JSON.stringify(newStore))
+        localStorage.setItem(this.storageId, JSON.stringify(newStore))
       }
 
       return newStore
