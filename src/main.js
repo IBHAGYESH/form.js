@@ -1,6 +1,6 @@
 // formData is accessible here as we have global variable in formData.js
-// import main from "./styles/main.css"
-import mainStyle from './styles/main.css' assert { type: 'css' }
+import './styles/reset.css'
+import './styles/main.css'
 import formData, { multipleData } from './data/formData.js';
 import Form from './lib/form.js';
 import Storage from './lib/storage.js';
@@ -68,22 +68,10 @@ class Main {
   }
 }
 
-function getStyle(className) {
-  var cssText = "";
-  var classes = mainStyle.rules || mainStyle.cssRules;
-  for (var x = 0; x < classes.length; x++) {
-    if (classes[x].selectorText == className) {
-      cssText += classes[x].cssText || classes[x].style.cssText;
-    }
-  }
-  return cssText;
-}
-
 export default function formJs(divId, data) {
   const mainDiv = document.getElementById(divId)
-  console.log(getStyle(".background"), "{{{{");
-
-  mainDiv.setAttribute("class", getStyle(".background"))
+  mainDiv.setAttribute("mainDiv", "")
+  mainDiv.classList.add("background")
   if (data.length && Array.isArray(data) && Array.isArray(data[0])) {
     // load multiple forms if data is passed as array
 
@@ -112,7 +100,7 @@ export default function formJs(divId, data) {
 
     const tableDiv = document.createElement("div")
     const table = document.createElement("table")
-    table.setAttribute("id", "root-table")
+    tableDiv.setAttribute("id", "root-table")
     tableDiv.appendChild(table)
 
     mainDiv.appendChild(formDiv)

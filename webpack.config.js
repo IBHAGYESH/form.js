@@ -1,42 +1,27 @@
-export default {
+const path = require("path");
+
+module.exports = {
   mode: 'development',
   entry: "./src/main.js",
   watch: true,
   output: {
-    path: "./dist",
+    path: path.resolve(__dirname, "dist"),
     publicPath: '/dist',
     filename: "bundle.js",
     chunkFilename: '[name].js'
   },
   module: {
-    rules: [{
-      test: /.jsx?$/,
-      include: [
-        "./src"
-      ],
-      exclude: [
-        "./node_modules"
-      ],
-      loader: 'babel-loader',
-      options: {
-        presets: [
-          ["@babel/env", {
-            "targets": {
-              "browsers": "last 2 chrome versions"
-            }
-          }]
-        ]
+    rules: [
+      {
+        test: /\\.js$/,
+        loader: "babel-loader",
+        exclude: "/node_modules/",
+      },
+      // CSS rules
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
-    }]
+    ],
   },
-  resolve: {
-    extensions: ['.json', '.js', '.jsx']
-  },
-  devtool: 'source-map',
-  devServer: {
-    contentBase: "./dist",
-    inline: true,
-    host: 'localhost',
-    port: 8080,
-  }
 };

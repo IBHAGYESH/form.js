@@ -14,6 +14,7 @@ export default class Form {
             this[key] = document.createElement("input")
           }
 
+
           switch (type) {
             case "hidden":
               if (unique) {
@@ -34,12 +35,12 @@ export default class Form {
               break
 
             default:
-
-              if (value) {
-                this[key].setAttribute("value", value)
-              }
               break;
           }
+          if (value) {
+            this[key].setAttribute("value", value)
+          }
+
           this[key].setAttribute("type", type)
           if (key) {
             this[key].setAttribute("key", key)
@@ -51,8 +52,13 @@ export default class Form {
             form.appendChild(lbl)
           }
           form.appendChild(this[key])
+          if (type !== "hidden") {
+            const br = document.createElement("br")
+            form.appendChild(br)
+          }
         }
       })
+
       this.container.appendChild(form)
     }
 

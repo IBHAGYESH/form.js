@@ -13,7 +13,7 @@ export default class Table {
 
     this.initTable = () => {
       this.container.innerHTML = ""
-      const titles = ["Name", "Email", "Phone", "Address", "Street Address", "City", "State", "Pin Code", "Actions"]
+      const titles = ["Name", "Email", "Phone", "Address", "Street Address", "City", "State", "Pin Code", "Country", "Actions"]
       const titlesTr = document.createElement("tr")
       titles.forEach((title) => {
         const titleTd = document.createElement("td")

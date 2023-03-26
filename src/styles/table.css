@@ -1,0 +1,11 @@
+[id*='root-table'], [id*='root-table-*']{
+  width: 90%;
+  margin: auto;
+  background-color: aliceblue;
+  padding: 10px 10px;
+  border-radius: 5px;
+  filter: drop-shadow(5px 5px 10px #000);
+}
+td {
+    border: 1px solid black;
+}
