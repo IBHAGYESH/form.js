@@ -1,6 +1,6 @@
 [id*='root-table'], [id*='root-table-*']{
   width: 90%;
-  margin: auto;
+  margin: 50px auto;
   background-color: aliceblue;
   padding: 10px 10px;
   border-radius: 5px;
@@ -8,4 +8,11 @@
 }
 td {
     border: 1px solid black;
+    text-align: center;
+    padding: 0 5px;
+}
+
+table {
+  border-collapse: unset;
+  border-spacing: 2px;
 }

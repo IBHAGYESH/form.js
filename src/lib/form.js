@@ -13,8 +13,6 @@ export default class Form {
           if (!oddInputs.includes(type)) {
             this[key] = document.createElement("input")
           }
-
-
           switch (type) {
             case "hidden":
               if (unique) {

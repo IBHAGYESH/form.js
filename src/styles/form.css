@@ -1,6 +1,6 @@
 [id*='root-form'], [id*='root-form-*']{
   width: 60%;
-  margin: auto;
+  margin: 50px auto;
   background-color: aliceblue;
   padding: 20px 10px;
   border-radius: 5px;
@@ -8,5 +8,10 @@
 }
 
 label, input {
-    margin: 10px 0;
+    margin: 5px 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
 }

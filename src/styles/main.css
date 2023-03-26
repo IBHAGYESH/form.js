@@ -2,13 +2,7 @@
 @import 'table.css';
 
 /* Form JS main styles */
-
-body {
-    height: 100vh;
-}
 .background {
-  /* height: 100%; */
-  height: 100vh;
   background-image: linear-gradient(43deg, #4158d0 0%, #c850c0 46%, #ffcc70 100%);
   display: flex;
   flex-direction: column;

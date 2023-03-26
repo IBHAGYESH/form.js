@@ -100,7 +100,7 @@ export default function formJs(divId, data) {
 
     const tableDiv = document.createElement("div")
     const table = document.createElement("table")
-    tableDiv.setAttribute("id", "root-table")
+    table.setAttribute("id", "root-table")
     tableDiv.appendChild(table)
 
     mainDiv.appendChild(formDiv)
