@@ -1,5 +1,8 @@
-[id*='root-table'], [id*='root-table-*']{
-  width: 90%;
+div[mainTableDiv] {
+  overflow: auto;
+}
+[id*='root-table'],
+[id*='root-table-*'] {
   margin: 50px auto;
   background-color: aliceblue;
   padding: 10px 10px;
@@ -7,9 +10,9 @@
   filter: drop-shadow(5px 5px 10px #000);
 }
 td {
-    border: 1px solid black;
-    text-align: center;
-    padding: 0 5px;
+  border: 1px solid black;
+  text-align: center;
+  padding: 0 5px;
 }
 
 table {

@@ -1,118 +1,190 @@
-// formData is accessible here as we have global variable in formData.js
-import './styles/reset.css'
-import './styles/main.css'
-import formData, { multipleData } from './data/formData.js';
+import './styles/main.css';
+
 import Form from './lib/form.js';
 import Storage from './lib/storage.js';
 import Table from './lib/table.js';
 
 class Main {
-  constructor(formContainerId, tableContainerId, storageId) {
+  constructor(formData, formContainerId, tableContainerId, storageId) {
+    this.frm = new Form(formContainerId, formData); // form js class to create form and access its methods
 
-    const frm = new Form(formContainerId, formData); // form js class to create form and access its methods
-    const tbl = new Table(tableContainerId); // table js class to create table and access its methods
-    const storage = new Storage(storageId); // storage class to access storage methods
+    // only render table and init store if tableContainerId and storageId is used to init the MAIN class
+    if (tableContainerId && storageId) {
+      this.tbl = new Table(tableContainerId, formData); // table js class to create table and access its methods
+      this.storage = new Storage(storageId); // storage class to access storage methods
 
-    tbl.on("click", () => {
-      event.preventDefault()
-      const action = event.target.getAttribute("key")
-      const userId = event.target.getAttribute("userId")
-      if (action === "edit") {
-        this.loadData(userId)
-      } else {
-        this.deleteData(userId)
-      }
-    })
+      // DEP: Main -> Table
+      // sending events to the Table class
+      // here sending an event named "click" with the value of a cb function
+      this.tbl.on('click', () => {
+        event.preventDefault();
 
-    this.renderApp = () => {
-      frm.renderFormUI()
-      tbl.renderTable(storage.readData())
-    }
-    this.renderApp()
+        const action = event.target.getAttribute('key');
+        const dataId = event.target.getAttribute('dataId');
 
-    frm.container.onsubmit = () => {
-      event.preventDefault()
-      const formValues = {}
-
-      // getting values from the form refs 
-      const notAllowed = ["radio", "checkbox", "submit", "reset"]
-      formData.forEach(({ type, key }) => {
-        if (!notAllowed.includes(type)) {
-          formValues[key] = frm[key].value
+        if (action === 'edit') {
+          this.loadData(dataId);
+        } else {
+          this.deleteData(dataId);
         }
-      })
-      const storedData = storage.storeData(formValues)
-      tbl.renderTable(storedData)
-      event.target.reset()
-      frm.resetForm()
+      });
+
+      this.renderTable();
     }
 
-    frm.container.onreset = () => {
-      event.target.reset()
-      frm.resetForm()
-    }
+    // DEP: Form -> Storage
+    // DEP: Form -> Table
+    this.frm.container.onsubmit = () => {
+      event.preventDefault();
 
-    this.loadData = (userId) => {
-      const storedData = storage.readData()
-      const dataExists = storedData.find((data) => data.userId === userId)
-      if (dataExists) {
-        frm.loadDataIntoForm(dataExists)
+      // getting values from the form refs
+      this.frm.formData.forEach(({ type, key }) => {
+        switch (type) {
+          case 'radio':
+            {
+              this.frm.values[key] = {
+                type,
+                value: document.querySelector(`input[type='radio'][name=${key}]:checked`).value,
+              };
+            }
+            break;
+
+          case 'checkbox':
+            {
+              const checkedValues = [];
+
+              document
+                .querySelectorAll(`input[type='checkbox'][name=${key}]:checked`)
+                .forEach((input) => checkedValues.push(input.value));
+
+              this.frm.values[key] = { type, value: checkedValues.toString() };
+            }
+            break;
+
+          case 'hidden':
+          case 'submit':
+          case 'reset':
+            {
+              // don't process anything on these fields
+            }
+            break;
+
+          default:
+            {
+              this.frm.values[key] = { type, value: this.frm[key].value };
+            }
+            break;
+        }
+      });
+
+      console.log(this.frm.values, 'onsubmit**<<<');
+
+      if (tableContainerId && storageId) {
+        const storedData = this.storage.storeRowDataToStore(this.frm.values);
+        this.tbl.loadDataIntoTable(storedData);
       }
-    }
 
-    this.deleteData = (userId) => {
-      storage.deleteDataFromStore(userId)
-      this.renderApp()
-    }
+      const evt = new Event('form-submit', { bubbles: true, cancelable: false });
+      window.dispatchEvent(evt);
 
+      event.target.reset();
+    };
   }
+
+  // DEP: Form -> Storage
+  // DEP: Form -> Table
+  renderTable = () => {
+    this.tbl.loadDataIntoTable(this.storage.readStoreData());
+  };
+
+  // DEP: Form -> Storage
+  loadData = (dataId) => {
+    const store = this.storage.readStoreData();
+    const dataExists = store.find((data) => data.dataId.value === dataId);
+    if (dataExists) {
+      this.frm.loadDataIntoForm(dataExists);
+    }
+  };
+
+  // DEP: Main -> Storage
+  deleteData = (dataId) => {
+    this.storage.deleteRowDataFromStore(dataId);
+    this.renderTable();
+  };
 }
 
-export default function formJs(divId, data) {
-  const mainDiv = document.getElementById(divId)
-  mainDiv.setAttribute("mainDiv", "")
-  mainDiv.classList.add("background")
-  if (data.length && Array.isArray(data) && Array.isArray(data[0])) {
-    // load multiple forms if data is passed as array
+export function buildForm({ formDivId, tableDivId, formData }) {
+  if (formDivId && formData && formData.length > 1 && Array.isArray(formData) && Array.isArray(formData[0])) {
+    // load multiple forms if data is passed as array of array
 
-    data.forEach((_, index) => {
-      const formDiv = document.createElement("div")
-      formDiv.setAttribute("id", `root-form-${index}`)
+    const mainFormDiv = document.getElementById(formDivId); // get the main div from the DOM
+    mainFormDiv.setAttribute('mainFormDiv', ''); // add custom attribute without any value
 
-      const tableDiv = document.createElement("div")
-      const table = document.createElement("table")
-      table.setAttribute("id", `root-table-${index}`)
-      tableDiv.appendChild(table)
+    formData.forEach((form, index) => {
+      // create div for form and assign id
+      const formDiv = document.createElement('div');
+      formDiv.setAttribute('id', `root-form-${index}`);
 
-      mainDiv.appendChild(formDiv)
-      mainDiv.appendChild(tableDiv)
+      // add form to the main div
+      mainFormDiv.appendChild(formDiv);
 
-      new Main(`root-form-${index}`, `root-table-${index}`, `form-${index}`);
-    })
+      if (tableDivId) {
+        const mainTableDiv = document.getElementById(tableDivId); // get the main div from the DOM
+        mainTableDiv.setAttribute('mainTableDiv', ''); // add custom attribute without any value
 
+        // create table for form and assign id
+        const tableDiv = document.createElement('div');
+        const table = document.createElement('table');
+        table.setAttribute('id', `root-table-${index}`);
+        tableDiv.appendChild(table);
 
-  } else if (data.length &&
-    Array.isArray(data)) {
-    // load single form if data is single object
+        // add table to the main div
+        mainTableDiv.appendChild(tableDiv);
 
-    const formDiv = document.createElement("div")
-    formDiv.setAttribute("id", "root-form")
+        return new Main(formData, `root-form-${index}`, `root-table-${index}`, `form-${index}`);
+      } else {
+        return new Main(formData, `root-form-${index}`, null, null);
+      }
+    });
+  } else if (formDivId && formData && formData.length && Array.isArray(formData)) {
+    // load single form if formData is single array
 
-    const tableDiv = document.createElement("div")
-    const table = document.createElement("table")
-    table.setAttribute("id", "root-table")
-    tableDiv.appendChild(table)
+    const mainFormDiv = document.getElementById(formDivId); // get the main div from the DOM
+    mainFormDiv.setAttribute('mainFormDiv', ''); // add custom attribute without any value
 
-    mainDiv.appendChild(formDiv)
-    mainDiv.appendChild(tableDiv)
+    // create div for form and assign id
+    const formDiv = document.createElement('div');
+    formDiv.setAttribute('id', 'root-form');
 
-    new Main('root-form', 'root-table', 'form');
+    // add form to the main div
+    mainFormDiv.appendChild(formDiv);
 
+    if (tableDivId) {
+      const mainTableDiv = document.getElementById(tableDivId); // get the main div from the DOM
+      mainTableDiv.setAttribute('mainTableDiv', ''); // add custom attribute without any value
+
+      // create table for form and assign id
+      const tableDiv = document.createElement('div');
+      const table = document.createElement('table');
+      table.setAttribute('id', 'root-table');
+      tableDiv.appendChild(table);
+
+      // add table to the main div
+      mainTableDiv.appendChild(tableDiv);
+
+      return new Main(formData, 'root-form', 'root-table', 'form');
+    } else {
+      return new Main(formData, 'root-form', null, null);
+    }
   } else {
-    const msg = document.createElement("h1")
-    msg.innerText = "Data is incorrect"
-    mainDiv.appendChild(msg)
+    const msg = document.createElement('h1');
+    if (formDivId) {
+      // print error when form data is incorrect
+      msg.innerText = 'Data is incorrect';
+    } else {
+      // print error when form div id is incorrect
+      msg.innerText = 'form div id is incorrect';
+    }
+    document.body.appendChild(msg);
   }
 }
-
-formJs("root", formData)
